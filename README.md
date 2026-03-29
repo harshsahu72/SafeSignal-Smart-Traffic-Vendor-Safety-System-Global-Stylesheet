@@ -183,6 +183,8 @@ The city filter tab, map zone, and intersection list update **automatically**.
 ---
 
 ## 👨‍💻 Author
+**Harsh Kumar**
+Frontend Developer | Student
 
 
 ---
