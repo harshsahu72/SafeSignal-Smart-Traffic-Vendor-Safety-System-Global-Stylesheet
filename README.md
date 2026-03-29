@@ -60,8 +60,6 @@ python -m http.server 8080
 npx serve .
 ```
 
-Then open **http://localhost:8080** in your browser.
-
 ---
 
 ## 🏙️ Cities & Intersections
@@ -186,8 +184,6 @@ The city filter tab, map zone, and intersection list update **automatically**.
 
 ## 👨‍💻 Author
 
-Built as part of a Smart City Vendor Safety initiative.  
-Project: **4.01 — SafeSignal v2.1.0**
 
 ---
 
