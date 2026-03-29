@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeSignal — Smart Traffic Vendor Safety System</title>
+  <meta name="description" content="AI-powered traffic signal safety system for street vendors. Real-time alerts, wearable device integration, and accident prevention at busy intersections." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== LOADING SCREEN ===== -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loader-content">
+      <div class="loader-signal">
+        <div class="signal-light red active"></div>
+        <div class="signal-light yellow"></div>
+        <div class="signal-light green"></div>
+      </div>
+      <h2>SafeSignal</h2>
+      <p>Initializing safety network...</p>
+      <div class="loader-bar"><div class="loader-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-name">SafeSignal</span>
+        <span class="brand-version">v2.1.0</span>
+      </div>
+    </div>
+
+    <div class="network-status">
+      <div class="status-dot pulse-green"></div>
+      <span>Network Active</span>
+      <strong id="active-count">0</strong> vendors
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="nav-item" data-tab="signals" id="nav-signals">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Signal Monitor
+      </a>
+      <a href="#" class="nav-item" data-tab="vendors" id="nav-vendors">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Vendor Registry
+      </a>
+      <a href="#" class="nav-item" data-tab="wearable" id="nav-wearable">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Wearable Alerts
+      </a>
+      <a href="#" class="nav-item" data-tab="analytics" id="nav-analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analytics
+      </a>
+      <a href="#" class="nav-item" data-tab="map" id="nav-map">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        Intersection Map
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="emergency-btn" id="emergency-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Emergency Broadcast
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="breadcrumb">
+          <span id="page-title">Dashboard</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="time-display" id="live-time"></div>
+        <div class="alert-badge" id="alert-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge-count" id="badge-count">0</span>
+        </div>
+        <div class="user-avatar">OP</div>
+      </div>
+    </header>
+
+    <!-- ===== TAB: DASHBOARD ===== -->
+    <section class="tab-section active" id="tab-dashboard">
+
+      <!-- Hero Summary Cards -->
+      <div class="summary-grid">
+        <div class="summary-card card-green">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <div class="card-data">
+            <span class="card-value" id="safe-vendors">0</span>
+            <span class="card-label">Vendors Safe</span>
+          </div>
+          <div class="card-trend">+12% today</div>
+        </div>
+        <div class="summary-card card-orange">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="card-data">
+            <span class="card-value" id="alerts-today">0</span>
+            <span class="card-label">Alerts Sent Today</span>
+          </div>
+          <div class="card-trend">Real-time</div>
+        </div>
+        <div class="summary-card card-blue">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="card-data">
+            <span class="card-value" id="accidents-prevented">0</span>
+            <span class="card-label">Accidents Prevented</span>
+          </div>
+          <div class="card-trend">All-time</div>
+        </div>
+        <div class="summary-card card-purple">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div class="card-data">
+            <span class="card-value" id="response-time">0ms</span>
+            <span class="card-label">Avg. Alert Response</span>
+          </div>
+          <div class="card-trend">⚡ Ultra-fast</div>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Grid -->
+      <div class="dashboard-grid">
+
+        <!-- Live Signal Panel -->
+        <div class="panel signal-panel">
+          <div class="panel-header">
+            <h3>Live Signal Status</h3>
+            <div class="panel-badge blink-badge">LIVE</div>
+          </div>
+          <div class="signals-overview" id="signals-overview"></div>
+        </div>
+
+        <!-- Recent Alerts Feed -->
+        <div class="panel alerts-panel">
+          <div class="panel-header">
+            <h3>Alert Feed</h3>
+            <button class="btn-clear" id="clear-alerts">Clear</button>
+          </div>
+          <div class="alerts-feed" id="alerts-feed">
+            <div class="empty-feed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <p>No alerts yet. Monitoring active...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Traffic Flow Chart -->
+        <div class="panel chart-panel">
+          <div class="panel-header">
+            <h3>Traffic Flow — Last 60s</h3>
+            <select class="chart-filter" id="chart-filter">
+              <option value="all">All Intersections</option>
+            </select>
+          </div>
+          <div class="chart-area">
+            <canvas id="traffic-chart" height="180"></canvas>
+          </div>
+        </div>
+
+        <!-- Vendor Safety Heatmap -->
+        <div class="panel heatmap-panel">
+          <div class="panel-header">
+            <h3>Vendor Safety Score</h3>
+            <span class="sub-label">Real-time risk index</span>
+          </div>
+          <div class="vendor-safety-list" id="vendor-safety-list"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== TAB: SIGNAL MONITOR ===== -->
+    <section class="tab-section" id="tab-signals">
+      <div class="signal-monitor-topbar">
+        <div class="smt-left">
+          <h2>Signal Monitor</h2>
+          <p>Real-time traffic light status across all monitored intersections</p>
+        </div>
+        <div class="smt-right">
+          <!-- City filter pill tabs -->
+          <div class="city-filter-tabs" id="city-filter-tabs">
+            <!-- Rendered by JS -->
+          </div>
+          <!-- Add Signal button -->
+          <button class="btn-primary" id="add-signal-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Signal
+          </button>
+        </div>
+      </div>
+
+      <!-- Signal count summary bar -->
+      <div class="signal-city-summary" id="signal-city-summary"></div>
+
+      <div class="signals-grid" id="signals-grid"></div>
+    </section>
+
+    <!-- ===== TAB: VENDOR REGISTRY ===== -->
+    <section class="tab-section" id="tab-vendors">
+      <div class="section-header-row">
+        <div>
+          <h2>Vendor Registry</h2>
+          <p>Manage registered street vendors and their wearable devices</p>
+        </div>
+        <button class="btn-primary" id="add-vendor-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Vendor
+        </button>
+      </div>
+      <div class="vendor-table-wrap">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="vendor-search" placeholder="Search vendors by name or location..." />
+        </div>
+        <table class="vendor-table" id="vendor-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vendor Name</th>
+              <th>Intersection</th>
+              <th>Wearable</th>
+              <th>Status</th>
+              <th>Risk Level</th>
+              <th>Alerts Today</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="vendor-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== TAB: WEARABLE ALERTS ===== -->
+    <section class="tab-section" id="tab-wearable">
+      <div class="section-header">
+        <h2>Wearable Alert Simulator</h2>
+        <p>Test and simulate alert delivery to vendor wearable devices</p>
+      </div>
+      <div class="wearable-layout">
+        <div class="wearable-controls">
+          <div class="control-panel">
+            <h3>Alert Configuration</h3>
+            <div class="form-group">
+              <label>Target Vendor</label>
+              <select id="w-vendor-select"></select>
+            </div>
+            <div class="form-group">
+              <label>Alert Type</label>
+              <select id="w-alert-type">
+                <option value="signal_change">🚦 Signal Change Warning</option>
+                <option value="traffic_surge">🚗 Heavy Traffic Surge</option>
+                <option value="emergency">🚨 Emergency Alert</option>
+                <option value="safe_zone">✅ Safe Zone Clear</option>
+                <option value="shift_remind">⏰ Shift Safety Reminder</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Vibration Pattern</label>
+              <select id="w-vibration">
+                <option value="single">Single Pulse</option>
+                <option value="double">Double Pulse</option>
+                <option value="sos">SOS Pattern</option>
+                <option value="continuous">Continuous</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="w-message" rows="3" placeholder="Custom alert message...">Signal changing in 5 seconds! Move to safe zone.</textarea>
+            </div>
+            <button class="btn-primary btn-full" id="send-alert-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send Alert to Wearable
+            </button>
+            <button class="btn-secondary btn-full" id="broadcast-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.55A2 2 0 0 1 3.62 1.37h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.62-1.62a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              Broadcast to All Vendors
+            </button>
+          </div>
+
+          <div class="alert-history-box">
+            <h3>Alert Delivery Log</h3>
+            <div id="delivery-log"></div>
+          </div>
+        </div>
+
+        <!-- Wearable Device Preview -->
+        <div class="wearable-preview-area">
+          <h3>Wearable Device Preview</h3>
+          <div class="device-showcase">
+            <div class="smart-band" id="smart-band">
+              <div class="band-screen" id="band-screen">
+                <div class="band-time" id="band-time">--:--</div>
+                <div class="band-status" id="band-status">MONITORING</div>
+                <div class="band-signal-icon" id="band-signal-icon">
+                  <div class="mini-light red"></div>
+                  <div class="mini-light yellow"></div>
+                  <div class="mini-light green"></div>
+                </div>
+                <div class="band-message" id="band-message">System Ready</div>
+                <div class="band-battery">
+                  <div class="bat-fill" style="width:78%"></div>
+                </div>
+              </div>
+              <div class="band-strap top"></div>
+              <div class="band-strap bottom"></div>
+            </div>
+            <div class="device-stats">
+              <div class="dstat"><span>Battery</span><strong>78%</strong></div>
+              <div class="dstat"><span>Signal</span><strong id="dstat-signal">Strong</strong></div>
+              <div class="dstat"><span>Alerts Today</span><strong id="dstat-alerts">0</strong></div>
+              <div class="dstat"><span>Last Alert</span><strong id="dstat-last">Never</strong></div>
+            </div>
+          </div>
+          <!-- Vibration Animation -->
+          <div class="vibration-demo" id="vibration-demo">
+            <div class="vib-ring"></div>
+            <div class="vib-ring delay1"></div>
+            <div class="vib-ring delay2"></div>
+            <span>Device Vibrating...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TAB: ANALYTICS ===== -->
+    <section class="tab-section" id="tab-analytics">
+      <div class="section-header">
+        <h2>Safety Analytics</h2>
+        <p>Comprehensive data insights for vendor safety optimization</p>
+      </div>
+      <div class="analytics-grid">
+        <div class="panel analytics-card">
+          <h3>Alerts by Intersection (7 Days)</h3>
+          <canvas id="bar-chart" height="200"></canvas>
+        </div>
+        <div class="panel analytics-card">
+          <h3>Alert Type Distribution</h3>
+          <canvas id="donut-chart" height="200"></canvas>
+          <div class="donut-legend" id="donut-legend"></div>
+        </div>
+        <div class="panel analytics-card full-width">
+          <h3>Hourly Safety Events — Today</h3>
+          <canvas id="hourly-chart" height="160"></canvas>
+        </div>
+        <div class="panel analytics-card">
+          <h3>Top Risk Intersections</h3>
+          <div class="risk-list" id="risk-list"></div>
+        </div>
+        <div class="panel analytics-card">
+          <h3>System Performance</h3>
+          <div class="perf-stats" id="perf-stats"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TAB: MAP ===== -->
+    <section class="tab-section" id="tab-map">
+      <div class="section-header">
+        <h2>Intersection Map</h2>
+        <p>Visual overview of monitored traffic intersections and vendor positions</p>
+      </div>
+      <div class="map-layout">
+        <div class="map-container" id="intersection-map"></div>
+        <div class="map-sidebar">
+          <h3>Legend</h3>
+          <div class="legend-item"><div class="legend-dot green"></div> Safe Zone</div>
+          <div class="legend-item"><div class="legend-dot yellow"></div> Caution Zone</div>
+          <div class="legend-item"><div class="legend-dot red"></div> Danger Zone</div>
+          <div class="legend-item"><div class="legend-dot blue"></div> Vendor Location</div>
+          <hr>
+          <h3>Active Intersections</h3>
+          <div id="intersection-list"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== ADD VENDOR MODAL ===== -->
+  <div class="modal-overlay" id="vendor-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Register New Vendor</h3>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Vendor Name</label>
+            <input type="text" id="m-name" placeholder="e.g. Ramesh Patel" />
+          </div>
+          <div class="form-group">
+            <label>Contact Number</label>
+            <input type="text" id="m-phone" placeholder="+91 98765 43210" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Intersection</label>
+            <select id="m-intersection"></select>
+          </div>
+          <div class="form-group">
+            <label>Stall Type</label>
+            <select id="m-stall">
+              <option>Vegetable/Fruit</option>
+              <option>Tea/Snacks</option>
+              <option>Newspaper/Books</option>
+              <option>Flower Garlands</option>
+              <option>Mobile Accessories</option>
+              <option>Bangles/Jewellery</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Wearable Device ID</label>
+          <input type="text" id="m-device" placeholder="Auto-generated on save" />
+        </div>
+        <div class="form-group">
+          <label>Working Hours</label>
+          <input type="text" id="m-hours" placeholder="e.g. 7:00 AM - 9:00 PM" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-cancel">Cancel</button>
+        <button class="btn-primary" id="modal-save">Register Vendor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADD SIGNAL MODAL ===== -->
+  <div class="modal-overlay" id="signal-modal">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <div>
+          <h3>🚦 Add New Signal Intersection</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:3px">Register a new traffic signal location to the monitoring network</p>
+        </div>
+        <button class="modal-close" id="signal-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Intersection / Signal Name</label>
+            <input type="text" id="s-name" placeholder="e.g. Rajouri Garden Cross" />
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <div style="display:flex;gap:8px">
+              <select id="s-city-select" style="flex:1">
+                <option value="Bhopal">Bhopal</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Punjab">Punjab LASO</option>
+                <option value="Ranchi">Ranchi LASO</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Kolkata">Kolkata</option>
+                <option value="Pune">Pune</option>
+                <option value="Jaipur">Jaipur</option>
+                <option value="other">Other (type below)</option>
+              </select>
+              <input type="text" id="s-city-custom" placeholder="Custom city name" style="flex:1;display:none" />
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Area / Locality</label>
+            <input type="text" id="s-area" placeholder="e.g. Near Metro Station, Sector 12" />
+          </div>
+          <div class="form-group">
+            <label>Initial Signal Phase</label>
+            <select id="s-phase">
+              <option value="red">🔴 Red (Stop)</option>
+              <option value="green">🟢 Green (Go)</option>
+              <option value="yellow">🟡 Yellow (Caution)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Risk Score (1–100)</label>
+            <input type="number" id="s-risk" min="1" max="100" placeholder="e.g. 65" value="50" />
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">High ≥70 (Red) · Medium 45–69 (Yellow) · Low &lt;45 (Green)</div>
+          </div>
+          <div class="form-group">
+            <label>Expected Vehicle Density</label>
+            <select id="s-density">
+              <option value="high">🔴 High (busy market / metro area)</option>
+              <option value="medium">🟡 Medium (residential)</option>
+              <option value="low">🟢 Low (outskirts / industrial)</option>
+            </select>
+          </div>
+        </div>
+        <!-- Preview strip -->
+        <div class="signal-preview-strip" id="signal-preview-strip">
+          <div class="sprev-light" id="sprev-light">
+            <div class="sprev-bulb r" id="sprev-r"></div>
+            <div class="sprev-bulb y" id="sprev-y"></div>
+            <div class="sprev-bulb g" id="sprev-g"></div>
+          </div>
+          <div class="sprev-info">
+            <strong id="sprev-name">New Signal</strong>
+            <span id="sprev-city">📍 City</span>
+            <span id="sprev-id" style="font-family:monospace;font-size:0.7rem;color:var(--accent)">INT-??</span>
+          </div>
+          <div class="sprev-risk" id="sprev-risk">Risk: 50</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="signal-modal-cancel">Cancel</button>
+        <button class="btn-primary" id="signal-modal-save">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+          Add to Network
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="data.js"></script>
+  <script src="signals.js"></script>
+  <script src="vendors.js"></script>
+  <script src="charts.js"></script>
+  <script src="wearable.js"></script>
+  <script src="map.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
